@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
 import { FaWhatsapp } from "react-icons/fa";
 import './App.css'
+import reactIcon from './assets/skills/react.svg'
+import flutterIcon from './assets/skills/flutter.svg'
 
 
 const baseUrl = 'https://ahmadamrul.github.io'
@@ -23,6 +25,8 @@ const skills = [
   { name: 'PHP', icon: 'php-1.svg' },
   { name: 'CSS', icon: 'css-3.svg' },
   { name: 'C#', icon: 'c--4.svg' },
+  { name: 'React JS', icon: reactIcon, local: true },
+  { name: 'Flutter', icon: flutterIcon, local: true },
 ]
 
 const education = [
@@ -200,7 +204,7 @@ function App() {
         <section className="section about-section" id="about">
           <div className="section-title">
             <p className="meta">About me</p>
-            <h2>Game Developer, Game Programmer, and web creator.</h2>
+            <h2>Game Developer, Game Programmer, and web developer.</h2>
           </div>
           <p className="about-copy">
             I am a game enthusiast, and this passion drives me to pursue a career in the
@@ -231,7 +235,7 @@ function App() {
           <div className="skills-grid">
             {skills.map((skill) => (
               <article className="skill-card" key={skill.name}>
-                <img src={`${baseUrl}/img/svg/${skill.icon}`} alt="" />
+                <img src={skill.local ? skill.icon : `${baseUrl}/img/svg/${skill.icon}`} alt="" />
                 <span>{skill.name}</span>
               </article>
             ))}
@@ -273,7 +277,6 @@ function App() {
             <a href="https://ahmadamrul.itch.io/" target="_blank" rel="noreferrer">
               ahmadamrul.itch.io
             </a>
-            <span>Bondowoso, Indonesia</span>
           </div>
         </section>
       </main>
