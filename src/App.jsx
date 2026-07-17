@@ -1,32 +1,42 @@
-import { useMemo, useState } from 'react';
-import { FaWhatsapp } from "react-icons/fa";
+import { useEffect, useMemo, useState } from 'react';
+import { FaEnvelope, FaGamepad, FaMapMarkerAlt, FaPhone, FaWhatsapp } from 'react-icons/fa';
+import {
+  TbBrain,
+  TbBrandBootstrap,
+  TbBrandCpp,
+  TbBrandCSharp,
+  TbBrandCss3,
+  TbBrandFlutter,
+  TbBrandGit,
+  TbBrandHtml5,
+  TbBrandMysql,
+  TbBrandPhp,
+  TbBrandPython,
+  TbBrandReact,
+  TbBrandUnity,
+  TbCode,
+} from 'react-icons/tb';
+import Starfield from './Starfield'
+import CursorPet from './CursorPet'
 import './App.css'
-import reactIcon from './assets/skills/react.svg'
-import flutterIcon from './assets/skills/flutter.svg'
-
 
 const baseUrl = 'https://ahmadamrul.github.io'
 
-const navItems = [
-  { label: 'Home', href: '#home' },
-  { label: 'About', href: '#about' },
-  { label: 'Portfolio', href: '#portfolio' },
-  { label: 'Contact', href: '#contact' },
-]
-
 const skills = [
-  { name: 'Unity', icon: 'unity-69.svg' },
-  { name: 'Bootstrap', icon: 'bootstrap-4.svg' },
-  { name: 'C++', icon: 'c.svg' },
-  { name: 'CodeIgniter', icon: 'codeigniter.svg' },
-  { name: 'Git', icon: 'git-icon.svg' },
-  { name: 'HTML', icon: 'html-1.svg' },
-  { name: 'MySQL', icon: 'mysql-3.svg' },
-  { name: 'PHP', icon: 'php-1.svg' },
-  { name: 'CSS', icon: 'css-3.svg' },
-  { name: 'C#', icon: 'c--4.svg' },
-  { name: 'React JS', icon: reactIcon, local: true },
-  { name: 'Flutter', icon: flutterIcon, local: true },
+  { name: 'Unity', Icon: TbBrandUnity },
+  { name: 'C#', Icon: TbBrandCSharp },
+  { name: 'C++', Icon: TbBrandCpp },
+  { name: 'HTML', Icon: TbBrandHtml5 },
+  { name: 'CSS', Icon: TbBrandCss3 },
+  { name: 'Bootstrap', Icon: TbBrandBootstrap },
+  { name: 'MySQL', Icon: TbBrandMysql },
+  { name: 'Git', Icon: TbBrandGit },
+  { name: 'PHP', Icon: TbBrandPhp },
+  { name: 'CodeIgniter', Icon: TbCode },
+  { name: 'React JS', Icon: TbBrandReact },
+  { name: 'Flutter', Icon: TbBrandFlutter },
+  { name: 'Python', Icon: TbBrandPython },
+  { name: 'LLM', Icon: TbBrain },
 ]
 
 const education = [
@@ -37,7 +47,7 @@ const education = [
   },
   {
     year: '2017 - 2023',
-    school: 'Universitas Muhammadiyah Jember',
+    school: 'Muhammadiyah University of Jember',
     major: 'Information Technology (TI)',
   },
 ]
@@ -101,194 +111,192 @@ const projects = [
 ]
 
 function App() {
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [darkMode, setDarkMode] = useState(true)
-  const [query, setQuery] = useState('')
+  const [progress, setProgress] = useState(0)
 
-  const filteredProjects = useMemo(() => {
-    const keyword = query.trim().toLowerCase()
-
-    if (!keyword) {
-      return projects
+  useEffect(() => {
+    const onScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = document.documentElement
+      const max = scrollHeight - clientHeight
+      setProgress(max > 0 ? Math.min(100, (scrollTop / max) * 100) : 0)
     }
 
-    return projects.filter((project) => project.title.toLowerCase().includes(keyword))
-  }, [query])
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  useEffect(() => {
+    const sections = document.querySelectorAll('main > section')
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    if (prefersReducedMotion) {
+      sections.forEach((section) => section.classList.add('is-visible'))
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible')
+            observer.unobserve(entry.target)
+          }
+        })
+      },
+      { threshold: 0.15 }
+    )
+
+    sections.forEach((section) => observer.observe(section))
+    return () => observer.disconnect()
+  }, [])
+
+  const latestEducation = useMemo(() => education[education.length - 1], [])
 
   return (
-    <div className={darkMode ? 'site dark' : 'site'} data-theme={darkMode ? 'dark' : 'light'}>
-      <header className="site-header">
-        <div className="header-inner">
-          <button
-            className="icon-button"
-            type="button"
-            aria-label="Open menu"
-            onClick={() => setMenuOpen(true)}
-          >
-            <span className="hamburger"></span>
-          </button>
+    <div className="site">
+      <Starfield />
+      <CursorPet />
+      <div className="progress-bar" style={{ width: `${progress}%` }} />
+      <div className="brand-badge" aria-hidden="true">AA</div>
 
-          <a className="brand" href="#home" aria-label="Back to home">
-            <strong>Ahmad Amrul</strong>
-          </a>
-
-          <form className="search-box" role="search" onSubmit={(event) => event.preventDefault()}>
-            <span className="search-icon" aria-hidden="true"></span>
-            <input
-              type="search"
-              placeholder="Filter project..."
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-            />
-          </form>
-
-          <div className="header-actions">
-            <button
-              className="icon-button"
-              type="button"
-              aria-label={darkMode ? 'Light mode' : 'Dark mode'}
-              onClick={() => setDarkMode((isDark) => !isDark)}
-            >
-              <span className={darkMode ? 'mode-icon sun' : 'mode-icon moon'} aria-hidden="true"></span>
-            </button>
-            <a className="profile-chip" href="#about">
-              <img src={`${baseUrl}/img/me.jpg`} alt="Ahmad Amrul" />
-            </a>
-          </div>
-        </div>
-      </header>
-
-      <div className={menuOpen ? 'drawer open' : 'drawer'} aria-hidden={!menuOpen}>
-        <button className="drawer-backdrop" type="button" onClick={() => setMenuOpen(false)}>
-          <span className="sr-only">Close menu</span>
-        </button>
-        <aside className="drawer-panel" aria-label="Side menu">
-          <div className="drawer-profile">
-            <img className="avatar" src={`${baseUrl}/img/me.jpg`} alt="Ahmad Amrul" />
-            <div>
-              <p>PORTFOLIO</p>
-              <h2>Ahmad Amrul</h2>
-            </div>
-          </div>
-
-          <nav className="drawer-nav">
-            {navItems.map((item) => (
-              <a href={item.href} key={item.href} onClick={() => setMenuOpen(false)}>
-                {item.label}
-              </a>
-            ))}
-          </nav>
-
-        </aside>
-      </div>
-
-      <main className="main-wrap">
+      <main>
         <section className="hero" id="home">
-          <div className="hero-copy">
-            <p className="meta">Hi there</p>
-            <h1>
-              I'm <span>Ahmad Amrul</span>
-            </h1>
-            <p>
-              Game enthusiast and Game Developer focused on Unity gameplay programming,
-              creative systems, and interactive experiences.
-            </p>
-            <blockquote>Stay Hungry, Stay Foolish - Steve Jobs</blockquote>
-            <div className="hero-actions">
-              <a href="#portfolio">View Portfolio</a>
-              <a href="#contact">Contact Me</a>
-            </div>
-          </div>
-        </section>
-
-        <section className="section about-section" id="about">
-          <div className="section-title">
-            <p className="meta">About me</p>
-            <h2>Game Developer, Game Programmer, and web developer.</h2>
-          </div>
-          <p className="about-copy">
-            I am a game enthusiast, and this passion drives me to pursue a career in the
-            game industry as a Game Developer, especially as a Game Programmer. With
-            proficient skills in Unity Game Engine, I am ready to be involved in creative
-            game development that delivers unique experiences for players. When stuck on
-            game development, I also enjoy creating websites in my spare time.
+          <p className="hero-badge">
+            <span className="dot" aria-hidden="true"></span>
+            Hey, I&apos;m Amrul
           </p>
-          <div className="about-education" aria-label="Educational background">
-            <p className="meta">Education</p>
-            <div className="timeline">
-              {education.map((item) => (
-                <article className="timeline-item" key={item.school}>
-                  <span>{item.year}</span>
-                  <h3>{item.school}</h3>
-                  <p>{item.major}</p>
-                </article>
-              ))}
-            </div>
+
+          <img className="hero-avatar" src={`${baseUrl}/img/me.jpg`} alt="Ahmad Amrul" />
+
+          <p className="hero-kicker">Ahmad &middot;</p>
+          <h1 className="hero-name">Amrul</h1>
+          <p className="hero-role">Full Stack Developer &amp; Game Developer</p>
+
+
+          <p className="hero-quote">&ldquo;Stay Hungry, Stay Foolish&rdquo; &mdash; Steve Jobs</p>
+
+          <div className="hero-actions">
+            <a href="#portfolio">View Portfolio</a>
+            <a className="ghost" href="#contact">Contact Me</a>
+          </div>
+
+          <p className="scroll-hint">
+            Scroll
+            <span aria-hidden="true">&darr;</span>
+          </p>
+        </section>
+
+        <section className="about" id="about">
+          <p className="meta">About me</p>
+          <h2>A builder at heart.</h2>
+
+          <div className="about-grid">
+            <p className="about-text">
+  I am a game enthusiast passionate about pursuing 
+  a career as a Game Developer and Game Programmer.
+  With proficient skills in Unity Game Engine, 
+  I'm ready to create unique gaming experiences.
+  When not focused on game development, I enjoy:
+  <br />
+  - Building web application.
+  <br />
+  - Exploring AI and creative automation.
+</p>
+            <dl className="fact-list">
+              <div>
+                <dt>Location</dt>
+                <dd>Bondowoso, Indonesia</dd>
+              </div>
+              <div>
+                <dt>Education</dt>
+                <dd>{latestEducation.school}</dd>
+              </div>
+              <div>
+                <dt>Focus</dt>
+                <dd>Game Development (Unity)</dd>
+              </div>
+              <div>
+                <dt>Interests</dt>
+                <dd>Game Dev &middot; Web Dev &middot; AI</dd>
+              </div>
+            </dl>
           </div>
         </section>
 
-        <section className="section skills-section">
-          <div className="section-title">
-            <p className="meta">Skills</p>
-            <h2>Tools and technologies</h2>
-          </div>
+        <section className="skills" id="skills">
+          <p className="meta">Technical skills</p>
+          <h2>What I work with.</h2>
+
           <div className="skills-grid">
             {skills.map((skill) => (
-              <article className="skill-card" key={skill.name}>
-                <img src={skill.local ? skill.icon : `${baseUrl}/img/svg/${skill.icon}`} alt="" />
+              <div className="skill-card" key={skill.name}>
+                <skill.Icon aria-hidden="true" />
                 <span>{skill.name}</span>
-              </article>
+              </div>
             ))}
           </div>
         </section>
 
-        <section className="section portfolio-section" id="portfolio">
-          <div className="section-title row-title">
-            <div>
-              <p className="meta">Portfolio</p>
-              <h2>Selected game projects</h2>
-            </div>
-            <a href="https://ahmadamrul.itch.io/" target="_blank" rel="noreferrer">
-              Visit itch.io
-            </a>
-          </div>
+        <section className="portfolio" id="portfolio">
+          <p className="meta">Selected work</p>
+          <h2>Things I&apos;ve built.</h2>
 
-          <div className="project-grid">
-            {filteredProjects.map((project) => (
-              <a className="project-card" href={project.url} target="_blank" rel="noreferrer" key={project.title}>
+          <div className="project-list">
+            {projects.map((project) => (
+              <a className="project-row" href={project.url} target="_blank" rel="noreferrer" key={project.title}>
                 <img src={`${baseUrl}/img/${project.image}`} alt={project.title} />
-                <div>
+                <div className="project-row-body">
                   <h3>{project.title}</h3>
-                  <span>Open project</span>
+                  <span>Open project &rarr;</span>
                 </div>
               </a>
             ))}
           </div>
         </section>
 
-        <section className="section contact-section" id="contact">
-          <div className="section-title">
-            <p className="meta">Contact</p>
-            <h2>Let's build something interactive.</h2>
-          </div>
+        <section className="contact" id="contact">
+          <p className="meta">Get in touch</p>
+          <h2 className="contact-title">
+            Let&apos;s build something <em>interactive.</em>
+          </h2>
+          <p className="contact-subtitle">Open to Unity game projects, web work, and interesting collaborations.</p>
+
           <div className="contact-grid">
-            <a href="mailto:ahmadamrulm@gmail.com">ahmadamrulm@gmail.com</a>
-            <a href="tel:+6282139070376">+6282139070376</a>
-            <a href="https://ahmadamrul.itch.io/" target="_blank" rel="noreferrer">
-              ahmadamrul.itch.io
+            <a className="contact-pill" href="mailto:ahmadamrulm@gmail.com">
+              <FaEnvelope aria-hidden="true" />
+              <span>
+                <small>Email</small>
+                ahmadamrulm@gmail.com
+              </span>
+            </a>
+            <a className="contact-pill" href="tel:+6282139070376">
+              <FaPhone aria-hidden="true" />
+              <span>
+                <small>Phone</small>
+                +62 821-3907-0376
+              </span>
+            </a>
+            <a className="contact-pill" href="https://wa.me/6282139070376" target="_blank" rel="noreferrer">
+              <FaWhatsapp aria-hidden="true" />
+              <span>
+                <small>WhatsApp</small>
+                +62 821-3907-0376
+              </span>
+            </a>
+            <a className="contact-pill" href="https://ahmadamrul.itch.io/" target="_blank" rel="noreferrer">
+              <FaGamepad aria-hidden="true" />
+              <span>
+                <small>itch.io</small>
+                ahmadamrul.itch.io
+              </span>
             </a>
           </div>
         </section>
       </main>
 
-      <a
-  className="whatsapp-float"
-  href="https://wa.me/6282139070376"
-  target="_blank"
-  rel="noreferrer"
->
-  <FaWhatsapp size={20} />
-</a>
+      <footer className="site-footer">
+        <span>&copy; {new Date().getFullYear()} Ahmad Amrul</span>
+      </footer>
     </div>
   )
 }

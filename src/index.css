@@ -14,26 +14,19 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
 }
 
 body {
   min-width: 320px;
   min-height: 100svh;
   margin: 0;
-  background: #fdfcff;
-}
-
-body:has(.site.dark) {
-  background: #151516;
+  background: #08080a;
 }
 
 #root {
   min-height: 100svh;
-  background: #fdfcff;
-}
-
-#root:has(.site.dark) {
-  background: #151516;
+  background: #08080a;
 }
 
 button,
