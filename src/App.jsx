@@ -150,6 +150,27 @@ function App() {
     return () => observer.disconnect()
   }, [])
 
+  useEffect(() => {
+    function onKeyDown(e) {
+      if (e.code !== 'Space') return
+
+      const tag = e.target.tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target.isContentEditable) return
+      if (tag === 'A' || tag === 'BUTTON') return
+
+      e.preventDefault()
+
+      const pages = Array.from(document.querySelectorAll('main > section, .site-footer'))
+      const buffer = 4
+      const next = pages.find((page) => page.offsetTop > window.scrollY + buffer)
+
+      ;(next || pages[pages.length - 1])?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [])
+
   const latestEducation = useMemo(() => education[education.length - 1], [])
 
   return (
